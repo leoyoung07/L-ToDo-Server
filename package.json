@@ -1,0 +1,19 @@
+{
+  "name": "l-todo-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/leoyoung07/l-todo-server.git"
+  },
+  "author": "LeoYoung",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leoyoung07/l-todo-server/issues"
+  },
+  "homepage": "https://github.com/leoyoung07/l-todo-server#readme"
+}
