@@ -7,7 +7,7 @@ var server = net.createServer((socket) => {
   socket.on('end', () => {
     console.log('client disconnected');
   });
-  socket.write('hello, world\n');
+  socket.write('hello, client\n');
 });
 server.on('error', (err) => {
   console.log(err);
