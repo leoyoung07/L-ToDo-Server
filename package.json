@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/leoyoung07/l-todo-server/issues"
   },
-  "homepage": "https://github.com/leoyoung07/l-todo-server#readme"
+  "homepage": "https://github.com/leoyoung07/l-todo-server#readme",
+  "dependencies": {
+    "ioredis": "^4.0.0"
+  }
 }

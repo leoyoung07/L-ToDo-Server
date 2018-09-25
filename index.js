@@ -1,8 +1,14 @@
 var net = require('net');
+var Redis = require('ioredis');
+var redis = new Redis();
 var server = net.createServer((socket) => {
   console.log('client connected');
   socket.on('data', (data) => {
-    console.log('receive data: ' + data.toString());
+    data = data.toString();
+    console.log('receive data: ' + data);
+    if (data.indexOf('hello') !== 0) {
+      redis.set('tasks', data);
+    }
   });
   socket.on('end', () => {
     console.log('client disconnected');
