@@ -1,8 +1,10 @@
 var net = require('net');
 var Redis = require('ioredis');
 var redis = new Redis();
+var clients = [];
 var server = net.createServer(socket => {
   console.log('client connected');
+  clients.push(socket);
   socket.on('data', buffer => {
     const reqStr = buffer.toString();
     console.log('receive data: ' + reqStr);
@@ -35,6 +37,7 @@ var server = net.createServer(socket => {
             data: 'success'
           })
         );
+        broadcastUpdateTasks(clients, socket);
         break;
       case 'ping':
         socket.write(
@@ -67,3 +70,8 @@ server.on('error', err => {
 server.listen(7269, () => {
   console.log('server is listening on port: 7269');
 });
+
+
+broadcastUpdateTasks(clients, exceptClient) {
+  //TODO broadcastUpdateTasks
+}
