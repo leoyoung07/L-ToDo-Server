@@ -61,6 +61,12 @@ var server = net.createServer(socket => {
     console.log('client disconnected');
   });
   socket.on('error', error => {
+    var index = clients.findIndex(
+      sock =>
+        sock.remoteAddress === socket.remoteAddress &&
+        sock.remotePort === socket.remotePort
+    );
+    clients.splice(index, 1);
     console.log('error: ' + error);
   });
 });
@@ -71,7 +77,24 @@ server.listen(7269, () => {
   console.log('server is listening on port: 7269');
 });
 
-
-broadcastUpdateTasks(clients, exceptClient) {
-  //TODO broadcastUpdateTasks
+function broadcastUpdateTasks(clients, exceptClient) {
+  // broadcast update tasks, except current client
+  console.log('broadcastUpdateTasks');
+  for (var i = 0; i < clients.length; i++) {
+    var socket = clients[i];
+    console.log('check client: ' + socket.remoteAddress + ':' + socket.remotePort);
+    console.log('except client: ' + exceptClient.remoteAddress + ':' + exceptClient.remotePort);
+    if (
+      socket.remoteAddress !== exceptClient.remoteAddress ||
+      socket.remotePort !== exceptClient.remotePort
+    ) {
+      console.log('update client: ' + socket.remoteAddress + socket.remotePort);
+      socket.write(
+        JSON.stringify({
+          type: 'update',
+          data: 'update'
+        })
+      );
+    }
+  }
 }
