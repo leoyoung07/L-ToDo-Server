@@ -8,7 +8,18 @@ var server = net.createServer(socket => {
   socket.on('data', buffer => {
     const reqStr = buffer.toString();
     console.log('receive data: ' + reqStr);
-    const request = JSON.parse(reqStr);
+    let request;
+    try {
+      request = JSON.parse(reqStr);
+    } catch (error) {
+      socket.write(
+        JSON.stringify({
+          type: 'error',
+          data: error
+        })
+      );
+      return;
+    }
     switch (request.type) {
       case 'download':
         redis.get('tasks', (error, data) => {
