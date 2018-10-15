@@ -98,5 +98,5 @@ var SocketHelper = /** @class */ (function(_super) {
   };
   return SocketHelper;
 })(events_1.EventEmitter);
-exports.default = SocketHelper;
+module.exports = SocketHelper;
 //# sourceMappingURL=SocketHelper.js.map
