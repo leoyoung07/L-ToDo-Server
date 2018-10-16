@@ -1,18 +1,21 @@
 var net = require('net');
 var Redis = require('ioredis');
+var SocketHelper = require('./SocketHelper');
 var redis = new Redis();
 var clients = [];
 var server = net.createServer(socket => {
   console.log('client connected');
-  clients.push(socket);
-  socket.on('data', buffer => {
+  var socketHelper = new SocketHelper(socket);
+  clients.push(socketHelper);
+  socketHelper.on('data', buffer => {
     const reqStr = buffer.toString();
     console.log('receive data: ' + reqStr);
     let request;
     try {
       request = JSON.parse(reqStr);
     } catch (error) {
-      socket.write(
+      writeToSocket(
+        socketHelper,
         JSON.stringify({
           type: 'error',
           data: error
@@ -24,14 +27,16 @@ var server = net.createServer(socket => {
       case 'download':
         redis.get('tasks', (error, data) => {
           if (error) {
-            socket.write(
+            writeToSocket(
+              socketHelper,
               JSON.stringify({
                 type: 'error',
                 data: error
               })
             );
           } else {
-            socket.write(
+            writeToSocket(
+              socketHelper,
               JSON.stringify({
                 type: 'download',
                 data: data
@@ -42,7 +47,8 @@ var server = net.createServer(socket => {
         break;
       case 'upload':
         redis.set('tasks', request.data);
-        socket.write(
+        writeToSocket(
+          socketHelper,
           JSON.stringify({
             type: 'upload',
             data: 'success'
@@ -51,7 +57,8 @@ var server = net.createServer(socket => {
         broadcastUpdateTasks(clients, socket);
         break;
       case 'ping':
-        socket.write(
+        writeToSocket(
+          socketHelper,
           JSON.stringify({
             type: 'pong',
             data: 'pong'
@@ -59,7 +66,8 @@ var server = net.createServer(socket => {
         );
         break;
       default:
-        socket.write(
+        writeToSocket(
+          socketHelper,
           JSON.stringify({
             type: 'error',
             data: 'Unknown request type.'
@@ -92,7 +100,8 @@ function broadcastUpdateTasks(clients, exceptClient) {
   // broadcast update tasks, except current client
   console.log('broadcastUpdateTasks');
   for (var i = 0; i < clients.length; i++) {
-    var socket = clients[i];
+    var socketHelper = clients[i];
+    var socket = socketHelper.socket;
     console.log('check client: ' + socket.remoteAddress + ':' + socket.remotePort);
     console.log('except client: ' + exceptClient.remoteAddress + ':' + exceptClient.remotePort);
     if (
@@ -100,7 +109,8 @@ function broadcastUpdateTasks(clients, exceptClient) {
       socket.remotePort !== exceptClient.remotePort
     ) {
       console.log('update client: ' + socket.remoteAddress + socket.remotePort);
-      socket.write(
+      writeToSocket(
+        socketHelper,
         JSON.stringify({
           type: 'update',
           data: 'update'
@@ -108,4 +118,8 @@ function broadcastUpdateTasks(clients, exceptClient) {
       );
     }
   }
+}
+
+function writeToSocket(socketHelper, content, callback) {
+  socketHelper.writeData(Buffer.from(content + '\n'), callback);
 }
