@@ -1,5 +1,6 @@
 var net = require('net');
-var SocketHelper = require('./SocketHelper');
+var SocketHelper = require('../SocketHelper');
+var writeToSocket = require('./util').writeToSocket;
 
 var sock = net.connect(
   7269,

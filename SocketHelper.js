@@ -41,7 +41,7 @@ var SocketHelper = /** @class */ (function(_super) {
     _this.buffer = Buffer.alloc(0);
     _this.state = BufferReadState.HEAD;
     _this.bodyLength = 0;
-    _this.socket.on('data', _this.onData);
+    _this.socket.on('data', _this.onData.bind(_this));
     return _this;
   }
   SocketHelper.prototype.writeData = function(data, callback) {
